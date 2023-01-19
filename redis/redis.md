@@ -119,3 +119,69 @@ hexists person name
 ```
 
 More on [Redis Commands](https://redis.io/commands/)
+
+## Redis in Nodejs
+Install redis to project
+```zsh
+npm i redis
+```
+
+Import redis to project
+```js
+const Redis = require('redis');
+```
+
+Create redis client
+```js
+//Default settings
+const client = Redis.createClient();
+
+//Production
+const client = Redis.createClient({ url: '<LINK TO PRODUCTION REDIS CLIENT>'});
+```
+
+All basic commands can now be used with redis
+```js
+//Example set key/value pait with expiration
+redisClient.setex('name', 3600, 'Robin');
+```
+
+
+Basic express app using redis
+```js
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+const Redis = require('reduis');
+
+const redisClient = Redis.createClient();
+
+const DEFAULT_EXP = 3600; //1hr
+
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
+//If photos exist in redis cache, return that data, otherwise fetch from api and write data to redis, then return the data.
+app.get('/photos', async (req, res) => {
+    const albumId = req.query.albumId;
+
+    redisClient.get(`photos?albumId=${albumId}`, async (error, photos) => {
+        if(error) console.log(error);
+        if(photos !== null){
+            return res.json(JSON.parse(photos))
+        }else{
+            const { data } = await axios.get(
+                    'https://jsonplaceholder.typicode.com/photos',
+                    { params: { albumId } })
+
+            redisClient.setex(`photos?albumId=${albumId}`, DEFAULT_EXP, JSON.stringify(data));
+            res.json(data);
+        }
+    })
+
+    
+})
+
+```
+
