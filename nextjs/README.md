@@ -10,9 +10,10 @@ Next gives us many things out of the box:
 - Jsx compiler
 - Etc...
 
-```json
+```js
 // package.json
-{}
+{
+}
 ```
 
 ```bash
@@ -20,7 +21,7 @@ Next gives us many things out of the box:
 npm install react react-dom next.js
 ```
 
-```json
+```js
 // package.json
 {
   "dependencies": {
@@ -31,7 +32,7 @@ npm install react react-dom next.js
 }
 ```
 
-```json
+```js
 // Add dev script to package.json
 {
   "scripts": {
